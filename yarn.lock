@@ -1955,6 +1955,11 @@ d3@^4.13.0:
     d3-voronoi "1.1.2"
     d3-zoom "1.7.1"
 
+dat.gui@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/dat.gui/-/dat.gui-0.7.3.tgz#fae5317a8baf65b509242d1f59b5a31a49bbb1a7"
+  integrity sha512-VfVWUcuTwae6/MTia/s2aPB1NLZXA2Gz6PiVyYOrVfODbXJLNAkVjn0aiuxx08cR68ucOuwrNXXt0m9MNVJvkQ==
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"

@@ -1,9 +1,15 @@
 // import * as THREE from "three"
 import * as d3_color from 'd3-scale-chromatic';
+import * as dat from 'dat.gui';
 
 let json = require('../json/cells.json');
 let exp = require('../json/exp.json');
 // import OrbitControls from "./OrbitControls";
+
+var API = {
+    time: 0,
+    play: false,
+}
 
 function createTextCanvas(text, color, font, size) {
     size = size || 40;
@@ -364,4 +370,9 @@ export default () => {
         unfiltered
     }
     scatter(data);
+
+    const gui = new dat.GUI();
+    gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange( scatter(data) );
+    gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
+    gui.add( API, 'play', false, true ).name( 'continue/pause' ).onChange( scatter(data) );
 };

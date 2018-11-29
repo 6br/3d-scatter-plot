@@ -11,6 +11,12 @@ var API = {
     play: false,
 }
 
+setTimeout( function () {
+    if (API.play === true && API.time < 700) {
+        API.time++
+    }
+ } , 500 );
+
 function createTextCanvas(text, color, font, size) {
     size = size || 40;
     var canvas = document.createElement('canvas');
@@ -158,7 +164,7 @@ controls.maxPolarAngle = Math.PI / 2;
 function scatter(data) {
 
     var temp = data.unfiltered;
-    var xExent = d3.extent(temp, function(d) {
+    /*var xExent = d3.extent(temp, function(d) {
             return d.x;
         }),
         yExent = d3.extent(data.unfiltered, function(d) {
@@ -166,14 +172,14 @@ function scatter(data) {
         }),
         zExent = d3.extent(data.unfiltered, function(d) {
             return d.z;
-        }),
-        expExent = d3.extent(data.unfiltered, function(d) {
+        }),*/
+    var    expExent = d3.extent(data.unfiltered, function(d) {
             return d.exp;
         });
         // console.log(expExent)
-    xExent = [0, 1100];
-    yExent = [-1100, 0];
-    zExent = [-1100, 0];
+    var xExent = [0, 1100];
+    var yExent = [-1100, 0];
+    var zExent = [-1100, 0];
 
     var vpts = {
         xMax: xExent[1],
@@ -316,7 +322,7 @@ function scatter(data) {
     var down = false;
     var sx = 0,
         sy = 0;
-
+/*
     window.onmousedown = function(ev) {
         down = true;
         sx = ev.clientX;
@@ -337,7 +343,7 @@ function scatter(data) {
             sx += dx;
             sy += dy;
         }
-    }
+    }*/
     var animating = false;
     window.ondblclick = function() {
         animating = !animating;
@@ -372,7 +378,7 @@ export default () => {
     scatter(data);
 
     const gui = new dat.GUI();
-    gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange( scatter(data) );
-    gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
-    gui.add( API, 'play', false, true ).name( 'continue/pause' ).onChange( scatter(data) );
+    gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange( scatter(data) ).listen();
+    // gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
+    gui.add( API, 'play', false, true ).name( 'play/pause' ).onChange( scatter(data) );
 };

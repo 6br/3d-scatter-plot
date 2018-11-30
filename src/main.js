@@ -3,7 +3,8 @@ import * as d3_color from 'd3-scale-chromatic';
 import * as dat from 'dat.gui';
 
 let json = require('../json/cells.json');
-let exp = require('../json/exp.json');
+// let exp = require('../json/exp.json');
+let exps = require('../sample/all_time_cdx4_exp_list.json');
 // import OrbitControls from "./OrbitControls";
 
 var API = {
@@ -100,6 +101,7 @@ function getPts(x) {
 // var uploader = document.getElementById("uploader");
 var reader = new FileReader();
 var data;
+var rendered = false;
 
 reader.onload = function(e) {
     var contents = e.target.result;
@@ -141,6 +143,11 @@ var scene = new THREE.Scene();
 var scatterPlot = new THREE.Object3D();
 scene.add(scatterPlot);
 
+var points = new THREE.Object3D();
+scatterPlot.add(points);
+
+var spheres = [];
+
 scatterPlot.rotation.y = 0;
 
 function v(x, y, z) {
@@ -153,11 +160,71 @@ var controls = new THREE.OrbitControls( camera, renderer.domElement );
 controls.addEventListener( 'change', renderer );
 controls.minDistance = 10;
 controls.maxDistance = 1000;
-controls.maxPolarAngle = Math.PI / 2;
+// controls.maxPolarAngle = Math.PI / 2;
+var colour = d3_color.interpolateBlues;
+
+function rePlot(data) {
+    var expExent = d3.extent(data.exp, function(d) {
+        return d;
+    });
+    var pointCount = data.unfiltered.length;
+    for (var i = 0; i < pointCount; i++) {
+        /*var x = xScale(data.unfiltered[i].x);
+        var y = yScale(data.unfiltered[i].y);
+        var z = zScale(data.unfiltered[i].z);*/
+        // console.log(spheres[i])
+        spheres[i].material.color.set(new THREE.Color(colour(data.exp[i] / expExent[1])));
+        //var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
+    }
+
+}
+
+function rePlot2(data) {
+
+    var expExent = d3.extent(data.exp, function(d) {
+        return d;
+    });
+    // console.log(expExent)
+    var xExent = [0, 1100];
+    var yExent = [-1100, 0];
+    var zExent = [-1100, 0];
+    var colour = d3_color.interpolateBlues;
+
+    var xScale = d3.scale.linear()
+    .domain(xExent)
+    .range([-50, 50]);
+    var yScale = d3.scale.linear()
+        .domain(yExent)
+        .range([-50, 50]);
+    var zScale = d3.scale.linear()
+        .domain(zExent)
+        .range([-50, 50]);
+
+    scatterPlot.remove(points);
+    points = new THREE.Object3D();
+
+    var pointCount = data.unfiltered.length;
+    for (var i = 0; i < pointCount; i++) {
+        var x = xScale(data.unfiltered[i].x);
+        var y = yScale(data.unfiltered[i].y);
+        var z = zScale(data.unfiltered[i].z);
+        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
+        sphere.position.set(x, y, z);
+        //pointGeo.vertices.push(new THREE.Vector3(x, y, z));
+        // console.log(colour(data.unfiltered[i].exp))
+        //console.log(new THREE.Color(colour(data.unfiltered[i].exp)))
+        points.add(sphere);
+
+    }
+    // var points = new THREE.ParticleSystem(pointGeo, mat);
+    scatterPlot.add(points);
+}
 
 function scatter(data) {
 
     var temp = data.unfiltered;
+    
+
     /*var xExent = d3.extent(temp, function(d) {
             return d.x;
         }),
@@ -167,8 +234,8 @@ function scatter(data) {
         zExent = d3.extent(data.unfiltered, function(d) {
             return d.z;
         }),*/
-    var    expExent = d3.extent(data.unfiltered, function(d) {
-            return d.exp;
+    var    expExent = d3.extent(data.exp, function(d) {
+            return d;
         });
         // console.log(expExent)
     var xExent = [0, 1100];
@@ -293,21 +360,25 @@ function scatter(data) {
         size: 10
     });
 
+
+    scatterPlot.remove(points);
+    points = new THREE.Object3D();
+
     var pointCount = data.unfiltered.length;
     var pointGeo = new THREE.Geometry();
     for (var i = 0; i < pointCount; i++) {
         var x = xScale(data.unfiltered[i].x);
         var y = yScale(data.unfiltered[i].y);
         var z = zScale(data.unfiltered[i].z);
-        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.unfiltered[i].exp / expExent[1]))}));
+        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
         sphere.position.set(x, y, z);
         //pointGeo.vertices.push(new THREE.Vector3(x, y, z));
         // console.log(colour(data.unfiltered[i].exp))
         //console.log(new THREE.Color(colour(data.unfiltered[i].exp)))
-        scatterPlot.add(sphere);
-
+        spheres.push(sphere);
+        points.add(sphere);
     }
-    var points = new THREE.ParticleSystem(pointGeo, mat);
+    // var points = new THREE.ParticleSystem(pointGeo, mat);
     scatterPlot.add(points);
 
     renderer.render(scene, camera);
@@ -356,6 +427,7 @@ function scatter(data) {
     onmessage = function(ev) {
         paused = (ev.data == 'pause');
     };
+    rendered = true;
 
 }
 
@@ -364,21 +436,33 @@ export default () => {
     let unfiltered = [];
     for(var i = 0; i < 1000; i++) {
         // console.log(json[i][2])
-        unfiltered.push({x: json[i][0], y: json[i][1], z: json[i][2], id: 'point_' + i, exp: exp[i]});
+        unfiltered.push({x: json[i][0], y: json[i][1], z: json[i][2], id: 'point_' + i});
     }
     data = {
-        unfiltered
+        unfiltered,
+        exp: exps[API.time]
     }
     scatter(data);
 
     const gui = new dat.GUI();
-    gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange( scatter(data) ).listen();
+    gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange(() => {
+        data = {
+            unfiltered,
+            exp: exps[parseInt(API.time)]
+        };
+        rePlot(data)
+    } ).listen();
     // gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
-    gui.add( API, 'play', false, true ).name( 'play/pause' ).onChange( scatter(data) );
+    gui.add( API, 'play', false, true ).name( 'play/pause' );
 
     setInterval( function () {
         if (API.play === true && API.time < 700) {
-            API.time++
+            API.time = parseInt(API.time+1)
+            data = {
+                unfiltered,
+                exp: exps[API.time]
+            }
+            rePlot(data);
         }
-     } , 800 );
+     } , 300 );
 };

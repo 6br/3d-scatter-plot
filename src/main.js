@@ -11,12 +11,6 @@ var API = {
     play: false,
 }
 
-setTimeout( function () {
-    if (API.play === true && API.time < 700) {
-        API.time++
-    }
- } , 500 );
-
 function createTextCanvas(text, color, font, size) {
     size = size || 40;
     var canvas = document.createElement('canvas');
@@ -286,11 +280,11 @@ function scatter(data) {
     valueY.position.y = yScale(vpts.yMax) + 5,
     scatterPlot.add(valueY);
 
-    var titleZ = createText2D('Posterior(-Z) ' + format(zExent[0]));
+    var titleZ = createText2D('Ventral(-Z) ' + format(zExent[0]));
     titleZ.position.z = zScale(vpts.zMin) + 2;
     scatterPlot.add(titleZ);
 
-    var titleZ = createText2D('Anterior(Z) ' + format(zExent[1]));
+    var titleZ = createText2D('Dorsal(Z) ' + format(zExent[1]));
     titleZ.position.z = zScale(vpts.zMax) + 2;
     scatterPlot.add(titleZ);
 
@@ -381,4 +375,10 @@ export default () => {
     gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange( scatter(data) ).listen();
     // gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
     gui.add( API, 'play', false, true ).name( 'play/pause' ).onChange( scatter(data) );
+
+    setInterval( function () {
+        if (API.play === true && API.time < 700) {
+            API.time++
+        }
+     } , 800 );
 };

@@ -6,6 +6,7 @@ let json = require('../json/cells.json');
 // let exp = require('../json/exp.json');
 let exps = require('../sample/all_time_cdx4_exp_list.json');
 // import OrbitControls from "./OrbitControls";
+// let json = require('all_cells.json')
 
 var API = {
     time: 0,

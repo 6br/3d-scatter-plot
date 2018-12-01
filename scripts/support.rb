@@ -17,7 +17,7 @@ File.write("json/exp.json", JSON.dump(exp))
 t = 350
 json = JSON.load(File.read("sample/all_time_axes_dict.json"))
 array = []
-for i in 0..700 do
+for i in 0..50 do
     lr = json["lr"][t]
     va = json["va"][t]
     vd = json["vd"][t]
@@ -25,5 +25,5 @@ for i in 0..700 do
     cellpos = lr.zip(va, vd)
     array << cellpos
 end
-File.write("all_cells.json", JSON.dump(array))
+File.write("partial_cells.json", JSON.dump(array))
 

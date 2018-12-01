@@ -2,11 +2,11 @@
 import * as d3_color from 'd3-scale-chromatic';
 import * as dat from 'dat.gui';
 
-let json = require('../json/cells.json');
+//let json = require('../json/cells.json');
 // let exp = require('../json/exp.json');
 let exps = require('../sample/all_time_cdx4_exp_list.json');
 // import OrbitControls from "./OrbitControls";
-// let json = require('all_cells.json')
+let json = require('../partial_cells.json')
 
 var API = {
     time: 0,
@@ -437,7 +437,7 @@ export default () => {
     let unfiltered = [];
     for(var i = 0; i < 1000; i++) {
         // console.log(json[i][2])
-        unfiltered.push({x: json[i][0], y: json[i][1], z: json[i][2], id: 'point_' + i});
+        unfiltered.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
     }
     data = {
         unfiltered,
@@ -447,6 +447,11 @@ export default () => {
 
     const gui = new dat.GUI();
     gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange(() => {
+        let unfiltered = [];
+        for(var i = 0; i < 1000; i++) {
+            // console.log(json[i][2])
+            unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
+        }
         data = {
             unfiltered,
             exp: exps[parseInt(API.time)]

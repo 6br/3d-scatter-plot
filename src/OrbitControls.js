@@ -205,7 +205,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 				lastPosition.distanceToSquared( scope.object.position ) > EPS ||
 				8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS ) {
 
-				scope.dispatchEvent( changeEvent );
+				// scope.dispatchEvent( changeEvent );
 
 				lastPosition.copy( scope.object.position );
 				lastQuaternion.copy( scope.object.quaternion );

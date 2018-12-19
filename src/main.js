@@ -6,7 +6,7 @@ import * as dat from 'dat.gui';
 // let exp = require('../json/exp.json');
 let exps = require('../sample/all_time_cdx4_exp_list.json');
 // import OrbitControls from "./OrbitControls";
-let json = require('../partial_cells.json')
+// let json = require('../partial_cells.json')
 
 var API = {
     time: 0,
@@ -164,16 +164,32 @@ controls.maxDistance = 1000;
 // controls.maxPolarAngle = Math.PI / 2;
 var colour = d3_color.interpolateBlues;
 
+var xExent = [0, 1100];
+var yExent = [-1100, 0];
+var zExent = [-1100, 0];
+
+var xScale = d3.scale.linear()
+.domain(xExent)
+.range([-50, 50]);
+var yScale = d3.scale.linear()
+    .domain(yExent)
+    .range([-50, 50]);
+var zScale = d3.scale.linear()
+    .domain(zExent)
+    .range([-50, 50]);
+
+
 function rePlot(data) {
     var expExent = d3.extent(data.exp, function(d) {
         return d;
     });
     var pointCount = data.unfiltered.length;
     for (var i = 0; i < pointCount; i++) {
-        /*var x = xScale(data.unfiltered[i].x);
+        var x = xScale(data.unfiltered[i].x);
         var y = yScale(data.unfiltered[i].y);
-        var z = zScale(data.unfiltered[i].z);*/
+        var z = zScale(data.unfiltered[i].z);
         // console.log(spheres[i])
+        spheres[i].position.set(x, y, z)
         spheres[i].material.color.set(new THREE.Color(colour(data.exp[i] / expExent[1])));
         //var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
     }
@@ -434,41 +450,49 @@ function scatter(data) {
 
 export default () => {
     // init();
-    let unfiltered = [];
-    for(var i = 0; i < 1000; i++) {
-        // console.log(json[i][2])
-        unfiltered.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
-    }
-    data = {
-        unfiltered,
-        exp: exps[API.time]
-    }
-    scatter(data);
-
-    const gui = new dat.GUI();
-    gui.add( API, 'time', 0, 700 ).name( 'time' ).onChange(() => {
+    fetch("all_cells.json").then(res => res.json()).then(json => {
         let unfiltered = [];
         for(var i = 0; i < 1000; i++) {
             // console.log(json[i][2])
-            unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
+            unfiltered.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
         }
         data = {
             unfiltered,
-            exp: exps[parseInt(API.time)]
-        };
-        rePlot(data)
-    } ).listen();
-    // gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
-    gui.add( API, 'play', false, true ).name( 'play/pause' );
-
-    setInterval( function () {
-        if (API.play === true && API.time < 700) {
-            API.time = parseInt(API.time+1)
+            exp: exps[API.time]
+        }
+        scatter(data);
+    
+        const gui = new dat.GUI();
+        gui.add( API, 'time', 0, 699 ).name( 'time' ).onChange(() => {
+            let unfiltered = [];
+            for(var i = 0; i < 1000; i++) {
+                // console.log(json[i][2])
+                unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
+            }
             data = {
                 unfiltered,
-                exp: exps[API.time]
+                exp: exps[parseInt(API.time)]
+            };
+            // console.log(data);
+            rePlot(data)
+        } ).listen();
+        // gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
+        gui.add( API, 'play', false, true ).name( 'play/pause' );
+    
+        setInterval( function () {
+            if (API.play === true && API.time < 700) {
+                let unfiltered = [];
+                for(var i = 0; i < 1000; i++) {
+                    // console.log(json[i][2])
+                    unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
+                }
+                API.time = parseInt(API.time+1)
+                data = {
+                    unfiltered,
+                    exp: exps[API.time]
+                }
+                rePlot(data);
             }
-            rePlot(data);
-        }
-     } , 300 );
+         } , 100 );
+    })
 };

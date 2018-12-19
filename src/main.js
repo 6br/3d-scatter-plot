@@ -129,8 +129,8 @@ var w = 960;
 var h = 600;
 
 renderer.setSize(w, h);
+renderer.setClearColor(new THREE.Color(0xdddddd), 1.0);
 document.getElementById("container").appendChild(renderer.domElement);
-renderer.setClearColor(new THREE.Color("rgb(255, 255, 255)"));
 
 // 
 
@@ -161,6 +161,7 @@ var controls = new THREE.OrbitControls( camera, renderer.domElement );
 controls.addEventListener( 'change', renderer );
 controls.minDistance = 10;
 controls.maxDistance = 1000;
+
 // controls.maxPolarAngle = Math.PI / 2;
 var colour = d3_color.interpolateBlues;
 
@@ -283,11 +284,13 @@ function scatter(data) {
         .domain(zExent)
         .range([-50, 50]);
 
-    var lineGeo = new THREE.Geometry();
-    lineGeo.vertices.push(
-        v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zCen)), v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zCen)),
-        v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zCen)), v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zCen)),
-        v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMax)), v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMin)),
+    var lineGeoX = new THREE.Geometry();
+    lineGeoX.vertices.push(
+        v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zCen)), v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zCen)))
+    var lineGeoY = new THREE.Geometry();
+    lineGeoY.vertices.push(v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zCen)), v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zCen)))
+    var lineGeoZ = new THREE.Geometry();
+    lineGeoZ.vertices.push(    v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMax)), v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMin))
 /*
         v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMin)),
         v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMin)),
@@ -324,9 +327,15 @@ function scatter(data) {
         color: 0xcccccc,
         lineWidth: 1
     });
-    var line = new THREE.Line(lineGeo, lineMat);
-    line.type = THREE.Lines;
-    scatterPlot.add(line);
+    var lineX = new THREE.Line(lineGeoX, lineMat);
+    lineX.type = THREE.Lines;
+    scatterPlot.add(lineX);
+    var lineY = new THREE.Line(lineGeoY, lineMat);
+    lineY.type = THREE.Lines;
+    scatterPlot.add(lineY);
+    var lineZ = new THREE.Line(lineGeoZ, lineMat);
+    lineZ.type = THREE.Lines;
+    scatterPlot.add(lineZ);
 
     var titleX = createText2D('Left(-X)');
     titleX.position.x = xScale(vpts.xMin) - 6,
@@ -482,11 +491,11 @@ export default () => {
         setInterval( function () {
             if (API.play === true && API.time < 700) {
                 let unfiltered = [];
+                API.time = parseInt(API.time + 1)
                 for(var i = 0; i < 1000; i++) {
                     // console.log(json[i][2])
                     unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
                 }
-                API.time = parseInt(API.time+1)
                 data = {
                     unfiltered,
                     exp: exps[API.time]

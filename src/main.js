@@ -347,15 +347,15 @@ function scatter(data) {
     valueX.position.y = -2;
     scatterPlot.add(valueX);
 
-    var titleX = createText2D('Right(X)');
-    titleX.position.x = xScale(vpts.xMax) + 6;
-    titleX.position.y = 2;
-    scatterPlot.add(titleX);
+    var titleX2 = createText2D('Right(X)');
+    titleX2.position.x = xScale(vpts.xMax) + 6;
+    titleX2.position.y = 2;
+    scatterPlot.add(titleX2);
 
-    var valueX = createText2D(format(xExent[1]));
-    valueX.position.x = xScale(vpts.xMax) + 6,
-    valueX.position.y = -2;
-    scatterPlot.add(valueX);
+    var valueX2 = createText2D(format(xExent[1]));
+    valueX2.position.x = xScale(vpts.xMax) + 6,
+    valueX2.position.y = -2;
+    scatterPlot.add(valueX2);
 
     var titleY = createText2D('Vegetal(-Y)');
     titleY.position.y = yScale(vpts.yMin) - 5;
@@ -365,21 +365,21 @@ function scatter(data) {
     valueY.position.y = yScale(vpts.yMin) - 9,
     scatterPlot.add(valueY);
 
-    var titleY = createText2D('Animal(Y)');
-    titleY.position.y = yScale(vpts.yMax) + 9;
-    scatterPlot.add(titleY);
+    var titleY2 = createText2D('Animal(Y)');
+    titleY2.position.y = yScale(vpts.yMax) + 9;
+    scatterPlot.add(titleY2);
 
-    var valueY = createText2D(format(yExent[1]));
-    valueY.position.y = yScale(vpts.yMax) + 5,
-    scatterPlot.add(valueY);
+    var valueY2 = createText2D(format(yExent[1]));
+    valueY2.position.y = yScale(vpts.yMax) + 5,
+    scatterPlot.add(valueY2);
 
     var titleZ = createText2D('Ventral(-Z) ' + format(zExent[0]));
     titleZ.position.z = zScale(vpts.zMin) + 2;
     scatterPlot.add(titleZ);
 
-    var titleZ = createText2D('Dorsal(Z) ' + format(zExent[1]));
-    titleZ.position.z = zScale(vpts.zMax) + 2;
-    scatterPlot.add(titleZ);
+    var titleZ2 = createText2D('Dorsal(Z) ' + format(zExent[1]));
+    titleZ2.position.z = zScale(vpts.zMax) + 2;
+    scatterPlot.add(titleZ2);
 
     var mat = new THREE.ParticleBasicMaterial({
         vertexColors: true,
@@ -445,6 +445,16 @@ function scatter(data) {
             last = t;
             renderer.clear();
             camera.lookAt(scene.position);
+            titleX.quaternion.copy( camera.quaternion );
+            titleY.quaternion.copy( camera.quaternion );
+            titleX2.quaternion.copy( camera.quaternion );
+            titleY2.quaternion.copy( camera.quaternion );
+            titleZ.quaternion.copy( camera.quaternion );
+            valueX.quaternion.copy( camera.quaternion );
+            valueY.quaternion.copy( camera.quaternion );
+            valueX2.quaternion.copy( camera.quaternion );
+            valueY2.quaternion.copy( camera.quaternion );
+            titleZ2.quaternion.copy( camera.quaternion );
             renderer.render(scene, camera);
         }
         window.requestAnimationFrame(animate, renderer.domElement);

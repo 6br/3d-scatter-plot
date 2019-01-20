@@ -2,7 +2,7 @@
   "name": "3d-scatter-plot",
   "description": "Simple 3d-scatter-plot example",
   "version": "0.1.0",
-  "main": "src/App.js",
+  "main": "src/main.js",
   "license": "MIT",
   "scripts": {
     "start": "parcel src/index.html --open",

@@ -467,11 +467,38 @@ function scatter(data) {
 
 }
 
+const MAX_CELL = 1000;
+const MAX_FLAME = 699;
+
 export default () => {
-    // init();
+    /* Initialize D3.JS */
+    var margin = {top:0, right:50, bottom:-50, left:50},
+        width = 960 - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
+
+    var svg = d3.select("#vis")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+    var moving = false;
+    var currentValue = 0;
+    var targetValue = width;
+
+    var playButton = d3.select("#play-button");
+        
+    var xAxis = d3.scale.linear()
+        .domain([0, MAX_FLAME])
+        .range([0, targetValue])
+        .clamp(true);
+
+
+
+
+    /* Initialize THREE.js */
     fetch("all_cells.json").then(res => res.json()).then(json => {
         let unfiltered = [];
-        for(var i = 0; i < 1000; i++) {
+        for(var i = 0; i < MAX_CELL; i++) {
             // console.log(json[i][2])
             unfiltered.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
         }
@@ -480,11 +507,11 @@ export default () => {
             exp: exps[API.time]
         }
         scatter(data);
-    
+    /*
         const gui = new dat.GUI();
-        gui.add( API, 'time', 0, 699 ).name( 'time' ).onChange(() => {
+        gui.add( API, 'time', 0, MAX_FLAME ).name( 'time' ).onChange(() => {
             let unfiltered = [];
-            for(var i = 0; i < 1000; i++) {
+            for(var i = 0; i < MAX_CELL; i++) {
                 // console.log(json[i][2])
                 unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
             }
@@ -494,24 +521,107 @@ export default () => {
             };
             // console.log(data);
             rePlot(data)
-        } ).listen();
+        } ).listen();*/
         // gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
-        gui.add( API, 'play', false, true ).name( 'play/pause' );
-    
-        setInterval( function () {
-            if (API.play === true && API.time < 700) {
-                let unfiltered = [];
-                API.time = parseInt(API.time + 1)
-                for(var i = 0; i < 1000; i++) {
-                    // console.log(json[i][2])
-                    unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
-                }
-                data = {
-                    unfiltered,
-                    exp: exps[API.time]
-                }
-                rePlot(data);
+        // gui.add( API, 'play', false, true ).name( 'play/pause' );
+        function step() {
+            update(xAxis.invert(currentValue));
+            currentValue = currentValue + 1; //(targetValue/151);
+            if (currentValue > targetValue) {
+              moving = false;
+              currentValue = 0;
+              clearInterval(timer);
+              // timer = 0;
+              playButton.text("Play");
+              // console.log("Slider moving: " + moving);
             }
-         } , 100 );
+        }
+    
+        var slider = svg.append("g")
+            .attr("class", "slider")
+            .attr("transform", "translate(" + margin.left + "," + height/5 + ")");
+    
+        slider.append("line")
+            .attr("class", "track")
+            .attr("x1", xAxis.range()[0])
+            .attr("x2", xAxis.range()[1])
+            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-inset")
+            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-overlay")
+            .call(d3.behavior.drag()
+                .on("dragend", function() { slider.interrupt(); })
+                .on("drag", function() {
+                currentValue = d3.event.x;
+                update(xAxis.invert(currentValue)); 
+                })
+            );
+    
+        slider.insert("g", ".track-overlay")
+            .attr("class", "ticks")
+            .attr("transform", "translate(0," + 18 + ")")
+            .selectAll("text")
+            .data(xAxis.ticks(10))
+            .enter()
+            .append("text")
+            .attr("x", xAxis)
+            .attr("y", 10)
+            .attr("text-anchor", "middle")
+            .text(function(d) { return Math.round(d); });
+    
+        var handle = slider.insert("circle", ".track-overlay")
+            .attr("class", "handle")
+            .attr("r", 9);
+    
+        var label = slider.append("text")  
+            .attr("class", "label")
+            .attr("text-anchor", "middle")
+            .text("0")
+            .attr("transform", "translate(0," + (-25) + ")")
+   
+        var timer;
+
+        playButton
+            .on("click", function() {
+            var button = d3.select(this);
+            if (button.text() == "Pause") {
+              moving = false;
+              clearInterval(timer);
+              // timer = 0;
+              button.text("Play");
+            } else {
+              moving = true;
+              timer = setInterval(step, 150);
+              button.text("Pause");
+            }
+            // console.log("Slider moving: " + moving);
+          })
+        function update(h) {
+            // update position and text of label according to slider scale
+            handle.attr("cx", xAxis(h));
+            label
+                .attr("x", xAxis(h))
+                .text(parseInt(h));
+            
+            // filter data set and redraw plot
+            /* var newData = dataset.filter(function(d) {
+                return d.date < h;
+            })
+            drawPlot(newData); */
+            let unfiltered = [];
+            let time = h;
+            for(var i = 0; i < MAX_CELL; i++) {
+                // console.log(json[i][2])
+                unfiltered.push({x: json[parseInt(time)][i][0], y: json[parseInt(time)][i][1], z: json[parseInt(time)][i][2], id: 'point_' + i});
+            }
+            data = {
+                unfiltered,
+                exp: exps[parseInt(time)]
+            };
+            // console.log(data);
+            rePlot(data)
+        }
+
+        
     })
 };

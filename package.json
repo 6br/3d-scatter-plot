@@ -10,7 +10,7 @@
     "deploy": "parcel build src/index.html && netlify deploy -d dist -o"
   },
   "dependencies": {
-    "d3": "^4.13.0",
+    "d3": "^5.7.0",
     "d3-3d": "^0.0.9",
     "d3-scale-chromatic": "^1.3.3",
     "dat.gui": "^0.7.3",

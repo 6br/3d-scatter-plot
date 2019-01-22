@@ -129,7 +129,7 @@ var w = 960;
 var h = 600;
 
 renderer.setSize(w, h);
-renderer.setClearColor(new THREE.Color(0xdddddd), 1.0);
+renderer.setClearColor(new THREE.Color(0xeeeeee), 1.0); // Set Background Colors
 document.getElementById("container").appendChild(renderer.domElement);
 
 // 
@@ -226,7 +226,7 @@ function rePlot2(data) {
         var x = xScale(data.unfiltered[i].x);
         var y = yScale(data.unfiltered[i].y);
         var z = zScale(data.unfiltered[i].z);
-        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
+        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
         sphere.position.set(x, y, z);
         //pointGeo.vertices.push(new THREE.Vector3(x, y, z));
         // console.log(colour(data.unfiltered[i].exp))
@@ -396,7 +396,7 @@ function scatter(data) {
         var x = xScale(data.unfiltered[i].x);
         var y = yScale(data.unfiltered[i].y);
         var z = zScale(data.unfiltered[i].z);
-        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
+        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
         sphere.position.set(x, y, z);
         //pointGeo.vertices.push(new THREE.Vector3(x, y, z));
         // console.log(colour(data.unfiltered[i].exp))
@@ -591,7 +591,7 @@ export default () => {
               button.text("Play");
             } else {
               moving = true;
-              timer = setInterval(step, 150);
+              timer = setInterval(step, 100);
               button.text("Pause");
             }
             // console.log("Slider moving: " + moving);

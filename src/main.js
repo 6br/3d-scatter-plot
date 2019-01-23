@@ -14,7 +14,7 @@ var API = {
 }
 
 function createTextCanvas(text, color, font, size) {
-    size = size || 40;
+    size = size || 160;
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     var fontStr = (size + 'px ') + (font || 'Arial');
@@ -43,7 +43,8 @@ function createText2D(text, color, font, size, segW, segH) {
     });
     //tex.map.premultiplyAlpha = false;
     var mesh = new THREE.Mesh(plane, planeMat);
-    mesh.scale.set(0.075, 0.075, 0.075);
+    // mesh.scale.set(0.075, 0.075, 0.075);
+    mesh.scale.set(0.01, 0.01, 0.01);
     mesh.material.side = THREE.DoubleSide;
     //mesh.doubleSided = true;
     return mesh;
@@ -144,6 +145,13 @@ var scene = new THREE.Scene();
 var scatterPlot = new THREE.Object3D();
 scene.add(scatterPlot);
 
+var directionalLight = new THREE.DirectionalLight(0xffffff);
+//directionalLight.position.set(1, 1, 1).normalize();
+scene.add(directionalLight);
+
+const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
+scene.add(light);
+
 var points = new THREE.Object3D();
 scatterPlot.add(points);
 
@@ -195,47 +203,6 @@ function rePlot(data) {
         //var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
     }
 
-}
-
-function rePlot2(data) {
-
-    var expExent = d3.extent(data.exp, function(d) {
-        return d;
-    });
-    // console.log(expExent)
-    var xExent = [0, 1100];
-    var yExent = [-1100, 0];
-    var zExent = [-1100, 0];
-    var colour = d3_color.interpolateBlues;
-
-    var xScale = d3.scale.linear()
-    .domain(xExent)
-    .range([-50, 50]);
-    var yScale = d3.scale.linear()
-        .domain(yExent)
-        .range([-50, 50]);
-    var zScale = d3.scale.linear()
-        .domain(zExent)
-        .range([-50, 50]);
-
-    scatterPlot.remove(points);
-    points = new THREE.Object3D();
-
-    var pointCount = data.unfiltered.length;
-    for (var i = 0; i < pointCount; i++) {
-        var x = xScale(data.unfiltered[i].x);
-        var y = yScale(data.unfiltered[i].y);
-        var z = zScale(data.unfiltered[i].z);
-        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
-        sphere.position.set(x, y, z);
-        //pointGeo.vertices.push(new THREE.Vector3(x, y, z));
-        // console.log(colour(data.unfiltered[i].exp))
-        //console.log(new THREE.Color(colour(data.unfiltered[i].exp)))
-        points.add(sphere);
-
-    }
-    // var points = new THREE.ParticleSystem(pointGeo, mat);
-    scatterPlot.add(points);
 }
 
 function scatter(data) {
@@ -396,7 +363,7 @@ function scatter(data) {
         var x = xScale(data.unfiltered[i].x);
         var y = yScale(data.unfiltered[i].y);
         var z = zScale(data.unfiltered[i].z);
-        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), new THREE.MeshBasicMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
+        var sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), new THREE.MeshLambertMaterial({color: new THREE.Color(colour(data.exp[i] / expExent[1]))}));
         sphere.position.set(x, y, z);
         //pointGeo.vertices.push(new THREE.Vector3(x, y, z));
         // console.log(colour(data.unfiltered[i].exp))

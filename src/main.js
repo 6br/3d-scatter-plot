@@ -25,7 +25,7 @@ function createTextCanvas(text, color, font, size) {
     canvas.height = h;
     ctx.font = fontStr;
     // ctx.fillRect(0, 0, 600, 600);
-    ctx.fillStyle = color || 'black';
+    ctx.fillStyle = color || 'white';
     ctx.fillText(text, 0, Math.ceil(size * 0.8));
     return canvas;
 }
@@ -35,9 +35,9 @@ function createText2D(text, color, font, size, segW, segH) {
     var plane = new THREE.PlaneGeometry(canvas.width, canvas.height, segW, segH);
     var tex = new THREE.Texture(canvas);
     tex.needsUpdate = true;
-    var planeMat = new THREE.MeshBasicMaterial({
+    var planeMat = new THREE.MeshLambertMaterial({
         map: tex,
-        color: 0xffffff,
+        color: 0xcccccc,
         transparent: true,
         alphaTest:0.01
     });
@@ -130,7 +130,8 @@ var w = 960;
 var h = 600;
 
 renderer.setSize(w, h);
-renderer.setClearColor(new THREE.Color(0xeeeeee), 1.0); // Set Background Colors
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(new THREE.Color(0x000000), 1.0); // Set Background Colors
 document.getElementById("container").appendChild(renderer.domElement);
 
 // 

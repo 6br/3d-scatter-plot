@@ -126,20 +126,37 @@ function handleFiles() {
 var renderer = new THREE.WebGLRenderer({
     antialias: true
 });
-var w = 960;
-var h = 600;
+
+var w = window.innerWidth;
+var h = window.innerHeight;
 
 renderer.setSize(w, h);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setClearColor(new THREE.Color(0x000000), 1.0); // Set Background Colors
 document.getElementById("container").appendChild(renderer.domElement);
 
-// 
-
 var camera = new THREE.PerspectiveCamera(45, w / h, 1, 10000);
 camera.position.z = 100;
 camera.position.x = -100;
 camera.position.y = 100;
+
+onResize();
+// リサイズイベント発生時に実行
+window.addEventListener('resize', onResize);
+
+function onResize() {
+    // サイズを取得
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+  
+    // レンダラーのサイズを調整する
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(width, height);
+  
+    // カメラのアスペクト比を正す
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
 
 var scene = new THREE.Scene();
 
@@ -170,6 +187,21 @@ var controls = new THREE.OrbitControls( camera, renderer.domElement );
 controls.addEventListener( 'change', renderer );
 controls.minDistance = 10;
 controls.maxDistance = 1000;
+
+
+controls.enableDamping = true;
+controls.dampingFactor = 0.35;
+
+tick();
+
+function tick() {
+    controls.update();
+
+    // レンダリング
+    renderer.render(scene, camera);
+  
+    requestAnimationFrame(tick);
+}
 
 // controls.maxPolarAngle = Math.PI / 2;
 var colour = d3_color.interpolateBlues;
@@ -437,6 +469,7 @@ function scatter(data) {
 
 const MAX_CELL = 1000;
 const MAX_FLAME = 699;
+const INTERVAL = 150;
 
 export default () => {
     /* Initialize D3.JS */
@@ -559,7 +592,7 @@ export default () => {
               button.text("Play");
             } else {
               moving = true;
-              timer = setInterval(step, 100);
+              timer = setInterval(step, INTERVAL);
               button.text("Pause");
             }
             // console.log("Slider moving: " + moving);

@@ -4,7 +4,9 @@ import * as dat from 'dat.gui';
 
 //let json = require('../json/cells.json');
 // let exp = require('../json/exp.json');
-let exps = require('../sample/all_time_cdx4_exp_list.json');
+// let exps = require('../sample/all_time_cdx4_exp_list.json');
+let exps = require('../small_data/exp/CDX4.json');
+let time_cell_json = "time_cell_vd_va_lr.json";
 // import OrbitControls from "./OrbitControls";
 // let json = require('../partial_cells.json')
 
@@ -12,6 +14,8 @@ var API = {
     time: 0,
     play: false,
 }
+
+var colour = d3_color.interpolateInferno; // Colours for nodes.
 
 function createTextCanvas(text, color, font, size) {
     size = size || 160;
@@ -25,7 +29,7 @@ function createTextCanvas(text, color, font, size) {
     canvas.height = h;
     ctx.font = fontStr;
     // ctx.fillRect(0, 0, 600, 600);
-    ctx.fillStyle = color || 'white';
+    ctx.fillStyle = color || 'black'; //Set a text color.
     ctx.fillText(text, 0, Math.ceil(size * 0.8));
     return canvas;
 }
@@ -132,7 +136,7 @@ var h = window.innerHeight;
 
 renderer.setSize(w, h);
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setClearColor(new THREE.Color(0x000000), 1.0); // Set Background Colors
+renderer.setClearColor(new THREE.Color(0xFFFFFF), 1.0); // Set Background Colors
 document.getElementById("container").appendChild(renderer.domElement);
 
 var camera = new THREE.PerspectiveCamera(45, w / h, 1, 10000);
@@ -204,7 +208,7 @@ function tick() {
 }
 
 // controls.maxPolarAngle = Math.PI / 2;
-var colour = d3_color.interpolateBlues;
+
 
 var xExent = [0, 1100];
 var yExent = [-1100, 0];
@@ -272,7 +276,7 @@ function scatter(data) {
         zMin: zExent[0]
     }
 
-    var colour = d3_color.interpolateBlues;
+    // var colour = d3_color.interpolateBlues;
 
     var xScale = d3.scale.linear()
         .domain(xExent)
@@ -497,7 +501,7 @@ export default () => {
 
 
     /* Initialize THREE.js */
-    fetch("all_cells.json").then(res => res.json()).then(json => {
+    fetch(time_cell_json).then(res => res.json()).then(json => {
         let unfiltered = [];
         for(var i = 0; i < MAX_CELL; i++) {
             // console.log(json[i][2])

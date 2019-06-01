@@ -2,6 +2,8 @@ sample
 node_modules
 .cache
 dist
+*.tar.gz
+small_data
 
 yarn-error.log
 .DS_Store

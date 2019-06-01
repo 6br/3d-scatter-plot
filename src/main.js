@@ -5,8 +5,10 @@ import * as dat from 'dat.gui';
 //let json = require('../json/cells.json');
 // let exp = require('../json/exp.json');
 // let exps = require('../sample/all_time_cdx4_exp_list.json');
-let exps = require('../small_data/exp/CDX4.json');
-let time_cell_json = "time_cell_vd_va_lr.json";
+// let exps = require('../small_data/exp/CDX4.json');
+let exps = {};
+let exps_json = 'CDX4.json';
+let time_cell_json = 'time_cell_vd_va_lr.json';
 // import OrbitControls from "./OrbitControls";
 // let json = require('../partial_cells.json')
 
@@ -502,33 +504,18 @@ export default () => {
 
     /* Initialize THREE.js */
     fetch(time_cell_json).then(res => res.json()).then(json => {
-        let unfiltered = [];
-        for(var i = 0; i < MAX_CELL; i++) {
-            // console.log(json[i][2])
-            unfiltered.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
-        }
-        data = {
-            unfiltered,
-            exp: exps[API.time]
-        }
-        scatter(data);
-    /*
-        const gui = new dat.GUI();
-        gui.add( API, 'time', 0, MAX_FLAME ).name( 'time' ).onChange(() => {
+        fetch(exps_json).then(res => res.json()).then(load_exps => {
             let unfiltered = [];
             for(var i = 0; i < MAX_CELL; i++) {
                 // console.log(json[i][2])
-                unfiltered.push({x: json[parseInt(API.time)][i][0], y: json[parseInt(API.time)][i][1], z: json[parseInt(API.time)][i][2], id: 'point_' + i});
+                unfiltered.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
             }
             data = {
                 unfiltered,
-                exp: exps[parseInt(API.time)]
-            };
-            // console.log(data);
-            rePlot(data)
-        } ).listen();*/
-        // gui.add( API, 'time', 0 ).name( 'reset' ).onChange( scatter(data) );
-        // gui.add( API, 'play', false, true ).name( 'play/pause' );
+                exp: load_exps[API.time]
+            }
+            exps = load_exps;
+            scatter(data);
         function step() {
             update(xAxis.invert(currentValue));
             currentValue = currentValue + 1; //(targetValue/151);
@@ -601,6 +588,7 @@ export default () => {
             }
             // console.log("Slider moving: " + moving);
           })
+
         function update(h) {
             // update position and text of label according to slider scale
             handle.attr("cx", xAxis(h));
@@ -626,7 +614,7 @@ export default () => {
             // console.log(data);
             rePlot(data)
         }
-
+    })
         
     })
 };

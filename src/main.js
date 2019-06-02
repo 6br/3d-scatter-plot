@@ -19,7 +19,7 @@ var API = {
 }
 
 var colour = d3_color.interpolateInferno; // Colours for nodes.
-var colour = d3.interpolate("#444444", "blue");
+var colour = d3.interpolate("#666666", "purple");
 
 function createTextCanvas(text, color, font, size) {
     size = size || 160;

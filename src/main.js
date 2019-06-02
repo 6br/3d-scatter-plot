@@ -8,6 +8,7 @@ import * as dat from 'dat.gui';
 // let exps = require('../small_data/exp/CDX4.json');
 let exps = {};
 let exps_json = 'CDX4.json';
+let exps_jsons = ['exp/CDX4.json', 'exp/EVE1.json', 'exp/NOTO.json', 'exp/RIPPLY1.json', 'exp/RX3.json', 'exp/SOX2.json'];
 let time_cell_json = 'time_cell_vd_va_lr.json';
 // import OrbitControls from "./OrbitControls";
 // let json = require('../partial_cells.json')
@@ -18,6 +19,7 @@ var API = {
 }
 
 var colour = d3_color.interpolateInferno; // Colours for nodes.
+var colour = d3.interpolate("#444444", "blue");
 
 function createTextCanvas(text, color, font, size) {
     size = size || 160;

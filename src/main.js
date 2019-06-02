@@ -211,10 +211,9 @@ function tick() {
 
 // controls.maxPolarAngle = Math.PI / 2;
 
-
-var xExent = [0, 1100];
+var xExent = [-1100, 0];
 var yExent = [-1100, 0];
-var zExent = [-1100, 0];
+var zExent = [0, 1100];
 
 var xScale = d3.scale.linear()
 .domain(xExent)
@@ -262,9 +261,9 @@ function scatter(data) {
             return d;
         });
         // console.log(expExent)
-    var xExent = [0, 1100];
-    var yExent = [-1100, 0];
-    var zExent = [-1100, 0];
+    // var xExent = [0, 1100];
+    // var yExent = [-1100, 0];
+    // var zExent = [-1100, 0];
 
     var vpts = {
         xMax: xExent[1],

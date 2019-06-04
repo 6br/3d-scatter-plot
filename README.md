@@ -2,6 +2,8 @@
 
 ```bash
 $ yarn
+$ mkdir dist
+$ cp sample_data dist/
 ```
 
 # Run

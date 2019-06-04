@@ -7,7 +7,7 @@ import * as dat from 'dat.gui';
 // let exps = require('../sample/all_time_cdx4_exp_list.json');
 // let exps = require('../small_data/exp/CDX4.json');
 let exps = {};
-let exps_json = 'CDX4.json';
+let exps_json = 'exp/CDX4.json';
 let exps_jsons = ['exp/CDX4.json', 'exp/EVE1.json', 'exp/NOTO.json', 'exp/RIPPLY1.json', 'exp/RX3.json', 'exp/SOX2.json'];
 let time_cell_json = 'time_cell_vd_va_lr.json';
 // import OrbitControls from "./OrbitControls";
@@ -16,6 +16,7 @@ let time_cell_json = 'time_cell_vd_va_lr.json';
 var API = {
     time: 0,
     play: false,
+    dataset: exps_json
 }
 
 var colour = d3_color.interpolateInferno; // Colours for nodes.
@@ -208,7 +209,7 @@ function tick() {
     // レンダリング
     renderer.render(scene, camera);
   
-    requestAnimationFrame(tick);
+    // requestAnimationFrame(tick);
 }
 
 // controls.maxPolarAngle = Math.PI / 2;
@@ -468,7 +469,7 @@ function scatter(data) {
     };
     animate(new Date().getTime());
     onmessage = function(ev) {
-        paused = (ev.data == 'pause');
+        paused = (ev.data === 'pause');
     };
     rendered = true;
 
@@ -500,7 +501,22 @@ export default () => {
         .range([0, targetValue])
         .clamp(true);
 
-
+    var select_data = (data) => {
+        console.log(data);
+        if (data) {
+            fetch(data).then(res => res.json()).then(load_exps => {
+                data = {
+                    exp: load_exps[API.time]
+                }
+                exps = load_exps;
+                update(xAxis.invert(currentValue));
+                // scatter(data);
+            })
+        }
+    };
+    
+    const gui = new dat.GUI();
+    gui.add(API, 'dataset', exps_jsons ).name( 'gene' ).onChange(data => select_data(data) ).listen();
 
 
     /* Initialize THREE.js */

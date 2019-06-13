@@ -6,6 +6,7 @@ import * as dat from 'dat.gui';
 // let exp = require('../json/exp.json');
 // let exps = require('../sample/all_time_cdx4_exp_list.json');
 // let exps = require('../small_data/exp/CDX4.json');
+let cividis = require('./cividis.json');
 let exps = {};
 let exps_json = 'exp/CDX4.json';
 let exps_jsons = ['exp/CDX4.json', 'exp/EVE1.json', 'exp/NOTO.json', 'exp/RIPPLY1.json', 'exp/RX3.json', 'exp/SOX2.json'];
@@ -20,7 +21,9 @@ var API = {
 }
 
 var colour = d3_color.interpolateInferno; // Colours for nodes.
-var colour = d3.interpolate("#666666", "purple");
+colour = d3.interpolate("#D3D3D3", "blue");
+var interpolateCividis = t => cividis[Math.max(0, Math.min(255, Math.round(t * 255)))];
+colour = interpolateCividis;
 
 function createTextCanvas(text, color, font, size) {
     size = size || 160;

@@ -1,13 +1,34 @@
 // import * as THREE from "three"
 import * as d3_color from 'd3-scale-chromatic';
 import * as dat from 'dat.gui';
+import {Spinner} from 'spin.js';
 
 //let json = require('../json/cells.json');
 // let exp = require('../json/exp.json');
 // let exps = require('../sample/all_time_cdx4_exp_list.json');
 // let exps = require('../small_data/exp/CDX4.json');
+var opts = {
+    lines: 13, // The number of lines to draw
+    length: 33, // The length of each line
+    radius: 16, // The radius of the inner circle
+    corners: 1, // Corner roundness (0..1)
+    rotate: 74, // The rotation offset
+    direction: 1, // 1: clockwise, -1: counterclockwise
+    color: '#000', // #rgb or #rrggbb or array of colors
+    animation: 'spinner-line-fade-quick', 
+    fadeColor: 'transparent',
+    zIndex: 2e9,
+    position: 'absolute',
+    speed: 1, // Rounds per second
+    trail: 71, // Afterglow percentage
+    shadow: true, // Whether to render a shadow
+    hwaccel: true, // Whether to use hardware acceleration
+    className: 'spinner', // The CSS class to assign to the spinner
+  };
+var spinner = new Spinner(opts);
 let cividis = require('./cividis.json');
 let exps = {};
+let time_cell = [];
 let exps_json = 'exp/CDX4.json';
 let exps_jsons = ['exp/CDX4.json', 'exp/EVE1.json', 'exp/NOTO.json', 'exp/RIPPLY1.json', 'exp/RX3.json', 'exp/SOX2.json'];
 let time_cell_json = 'time_cell_vd_va_lr.json';
@@ -484,6 +505,9 @@ const INTERVAL = 150;
 
 export default () => {
     /* Initialize D3.JS */
+    var spin_target = document.getElementById('wrapper');
+    spinner.spin(spin_target)
+
     var margin = {top:0, right:50, bottom:-100, left:50},
         width = 960 - margin.left - margin.right,
         height = 100 - margin.top - margin.bottom;
@@ -505,15 +529,19 @@ export default () => {
         .clamp(true);
 
     var select_data = (data) => {
-        console.log(data);
+        var spin_target = document.getElementById('wrapper');
+        spinner.spin(spin_target);
         if (data) {
             fetch(data).then(res => res.json()).then(load_exps => {
                 data = {
+                    unfiltered: time_cell,
                     exp: load_exps[API.time]
                 }
                 exps = load_exps;
-                update(xAxis.invert(currentValue));
+                scatter(data);
+//                update(xAxis.invert(currentValue));
                 // scatter(data);
+                spinner.stop();
             })
         }
     };
@@ -525,17 +553,17 @@ export default () => {
     /* Initialize THREE.js */
     fetch(time_cell_json).then(res => res.json()).then(json => {
         fetch(exps_json).then(res => res.json()).then(load_exps => {
-            let unfiltered = [];
             for(var i = 0; i < MAX_CELL; i++) {
                 // console.log(json[i][2])
-                unfiltered.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
+                time_cell.push({x: json[0][i][0], y: json[0][i][1], z: json[0][i][2], id: 'point_' + i});
             }
             data = {
-                unfiltered,
+                unfiltered: time_cell,
                 exp: load_exps[API.time]
             }
             exps = load_exps;
             scatter(data);
+            spinner.stop();
         function step() {
             update(xAxis.invert(currentValue));
             currentValue = currentValue + 1; //(targetValue/151);

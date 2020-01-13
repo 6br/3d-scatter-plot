@@ -9,16 +9,24 @@
             margin: 0px;
             padding: 0px;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
         }
         #container {
+            flex-grow: 1;
            /* width:960px;
             height:700px; */
+            height: 300px;
+        }
+        footer{
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
         }
 
         #play-button {
-            position: absolute;
-            top: 150px;
-            left: 50px;
             background: #f08080;
             padding-right: 26px;
             border-radius: 3px;
@@ -102,12 +110,10 @@
     </head>
     
     <body>
-        <div id="wrapper">
-            <div id="vis">
-                <button id="play-button">Play</button>
-            </div>
             <div id="container"></div>
-        </div>
+        <footer id="vis">
+            <button id="play-button">Play</button>
+        </footer>
         <script src="./index.js"></script>
     </body>
 </html>

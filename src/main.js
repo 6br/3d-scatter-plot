@@ -69,7 +69,7 @@ function createTextCanvas(text, color, font, size) {
     var w = ctx.measureText(text).width;
     var h = Math.ceil(size);
     canvas.width = w;
-    canvas.height = h;
+    // canvas.height = h;
     ctx.font = fontStr;
     // ctx.fillRect(0, 0, 600, 600);
     ctx.fillStyle = color || 'black'; //Set a text color.
@@ -528,7 +528,8 @@ export default () => {
 
     var svg = d3.select("#vis")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
+        .attr("viewBox", "0 0 "+  (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+        //.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
     var moving = false;

@@ -35,6 +35,16 @@ let time_cell_json = 'time_cell_vd_va_lr.json';
 // import OrbitControls from "./OrbitControls";
 // let json = require('../partial_cells.json')
 
+let annotation = {
+    139: "Shield",
+    220: "Epiboly 75%",
+    272: "Epiboly 90%",
+    333: "Bud",
+    373: "3 somites",
+    413: "6 somites",
+    510: "10 somites",
+}
+
 var API = {
     time: 0,
     play: false,
@@ -608,6 +618,8 @@ export default () => {
             .attr("y", 10)
             .attr("text-anchor", "middle")
             .text(function(d) { return Math.round(d); });
+
+        // console.log(xAxis.ticks(10)) for debugging
     
         var handle = slider.insert("circle", ".track-overlay")
             .attr("class", "handle")

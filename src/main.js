@@ -36,6 +36,7 @@ let time_cell_json = 'time_cell_vd_va_lr.json';
 // let json = require('../partial_cells.json')
 
 let annotation = {
+    0: "Start",
     139: "Shield",
     220: "Epiboly 75%",
     272: "Epiboly 90%",
@@ -43,7 +44,10 @@ let annotation = {
     373: "3 somites",
     413: "6 somites",
     510: "10 somites",
+    699: "Stop"
 }
+
+let ticks = Object.keys(annotation);
 
 var API = {
     time: 0,
@@ -574,6 +578,7 @@ export default () => {
             exps = load_exps;
             scatter(data);
             spinner.stop();
+
         function step() {
             update(xAxis.invert(currentValue));
             currentValue = currentValue + 1; //(targetValue/151);
@@ -609,21 +614,49 @@ export default () => {
     
         slider.insert("g", ".track-overlay")
             .attr("class", "ticks")
-            .attr("transform", "translate(0," + 18 + ")")
+            .attr("transform", "translate(0,-" + 15 + ")")
             .selectAll("text")
             .data(xAxis.ticks(10))
             .enter()
-            .append("text")
+            //.append("text")
+            //.attr("x", xAxis)
+            //.attr("y", 10)
+            //.attr("text-anchor", "middle")
+            //.text(function(d) { return Math.round(d); });
+            .append("line")
+            .attr("x1", xAxis)
+            .attr("x2", xAxis)
+            .attr("y1", 0)
+            .attr("y2", 10)
+            .attr("stroke", "#AAA")
+
+        var tick = slider.insert("g", ".track-overlay")
+            .attr("class", "ticks")
+            .attr("transform", "translate(0," + 15 + ")")
+            .selectAll("text")
+            .data(ticks)
+            .enter()
+            .append("g")
+            .attr("class", "tick")
+
+        tick.append("text")
             .attr("x", xAxis)
             .attr("y", 10)
             .attr("text-anchor", "middle")
-            .text(function(d) { return Math.round(d); });
+            .text(function(d) { return annotation[d]; });
 
-        // console.log(xAxis.ticks(10)) for debugging
+        tick.append("line")
+            .attr("x1", xAxis)
+            .attr("x2", xAxis)
+            .attr("y1", -10)
+            .attr("y2", 0)
+            .attr("stroke", "#AAA")
+
+        // console.log(xAxis.ticks(10)) //for debugging
     
         var handle = slider.insert("circle", ".track-overlay")
             .attr("class", "handle")
-            .attr("r", 9);
+            .attr("r", 7);
     
         var label = slider.append("text")  
             .attr("class", "label")

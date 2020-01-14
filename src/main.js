@@ -3,6 +3,7 @@ import * as d3_color from 'd3-scale-chromatic';
 import * as dat from 'dat.gui';
 import {Spinner} from 'spin.js';
 
+// https://webdevtrick.com/html-video-player-javascript-css/
 //let json = require('../json/cells.json');
 // let exp = require('../json/exp.json');
 // let exps = require('../sample/all_time_cdx4_exp_list.json');
@@ -257,8 +258,8 @@ var yExent = [-1100, 0];
 var zExent = [0, 1100];
 
 var xScale = d3.scale.linear()
-.domain(xExent)
-.range([-50, 50]);
+    .domain(xExent)
+    .range([-50, 50]);
 var yScale = d3.scale.linear()
     .domain(yExent)
     .range([-50, 50]);
@@ -701,6 +702,7 @@ export default () => {
             } else {
               moving = true;
               timer = setInterval(step, INTERVAL);
+              //timer = setTimeout(step, INTERVAL);
               // button.text("Pause");
               button.attr("class", "fas fa-pause");
             }

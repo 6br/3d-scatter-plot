@@ -524,7 +524,7 @@ export default () => {
 
     var margin = {top:0, right:20, bottom:-100, left:20},
         width = 960 - margin.left - margin.right,
-        height = 80 - margin.top - margin.bottom;
+        height = 60 - margin.top - margin.bottom;
 
     var svg = d3.select("#vis")
         .append("svg")
@@ -537,7 +537,7 @@ export default () => {
     var currentValue = 0;
     var targetValue = width;
 
-    var playButton = d3.select("#play-button");
+    var playButton = d3.select("#play-btn");
         
     var xAxis = d3.scale.linear()
         .domain([0, MAX_FLAME])
@@ -588,14 +588,15 @@ export default () => {
               currentValue = 0;
               clearInterval(timer);
               // timer = 0;
-              playButton.text("Play");
+              // playButton.text("Play");
+              playButton.attr("class", "fas fa-play");
               // console.log("Slider moving: " + moving);
             }
         }
     
         var slider = svg.append("g")
             .attr("class", "slider")
-            .attr("transform", "translate(" + margin.left + "," + height/5 + ")");
+            .attr("transform", "translate(" + margin.left + "," + 20 + ")");
     
         slider.append("line")
             .attr("class", "track")
@@ -644,6 +645,7 @@ export default () => {
             .attr("x", xAxis)
             .attr("y", 10)
             .attr("text-anchor", "middle")
+            .style('fill', 'white')
             .text(function(d) { return annotation[d]; });
 
         tick.append("line")
@@ -654,9 +656,9 @@ export default () => {
             .attr("stroke", "#AAA")
         
         var seek = slider.append("line")
-            .attr("class", "track")
-            .attr("x1", xAxis.range()[0])
-            .attr("x2", xAxis.range()[0])
+            .attr("class", "track-bar")
+            .attr("x1", xAxis.range()[0] - 7)
+            .attr("x2", xAxis.range()[0] - 7)
         
         // console.log(xAxis.ticks(10)) //for debugging
     
@@ -664,12 +666,14 @@ export default () => {
             .attr("class", "handle")
             .attr("r", 7);
     
-        var label = slider.append("text")  
+        /*var label = slider.append("text")  
             .attr("class", "label")
             .attr("text-anchor", "middle")
             .text("0")
-            .attr("transform", "translate(0," + (-15) + ")")
+            .attr("transform", "translate(0," + (-15) + ")")*/
    
+        var label = d3.select("#timePlayed")
+
         var timer;
 
         playButton
@@ -679,12 +683,13 @@ export default () => {
               moving = false;
               clearInterval(timer);
               // timer = 0;
-              button.text("Play");
-              button.attr("class", "triangle01")
+              // button.text("Play");
+              button.attr("class", "fas fa-play");
             } else {
               moving = true;
               timer = setInterval(step, INTERVAL);
-              button.text("Pause");
+              // button.text("Pause");
+              button.attr("class", "fas fa-pause");
             }
             // console.log("Slider moving: " + moving);
           })
@@ -693,9 +698,9 @@ export default () => {
             // update position and text of label according to slider scale
             handle.attr("cx", xAxis(h));
             label
-                .attr("x", xAxis(h))
+                //.attr("x", xAxis(h))
                 .text(parseInt(h));
-            seek.attr("x2", xAxis(h))
+            seek.attr("x2", xAxis(h) - 7)
             // filter data set and redraw plot
             /* var newData = dataset.filter(function(d) {
                 return d.date < h;

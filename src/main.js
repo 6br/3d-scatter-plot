@@ -370,8 +370,8 @@ function scatter(data) {
     );
     */
     var lineMat = new THREE.LineBasicMaterial({
-        color: 0xcccccc,
-        lineWidth: 1
+        color: 0xcccccc
+        // lineWidth: 1
     });
     var lineX = new THREE.Line(lineGeoX, lineMat);
     lineX.type = THREE.Lines;
@@ -427,7 +427,7 @@ function scatter(data) {
     titleZ2.position.z = zScale(vpts.zMax) + 2;
     scatterPlot.add(titleZ2);
 
-    var mat = new THREE.ParticleBasicMaterial({
+    var mat = new THREE.PointsMaterial({
         vertexColors: true,
         size: 10
     });
@@ -519,7 +519,7 @@ const INTERVAL = 150;
 
 export default () => {
     /* Initialize D3.JS */
-    var spin_target = document.getElementById('wrapper');
+    var spin_target = document.getElementById('container');
     spinner.spin(spin_target)
 
     var margin = {top:0, right:20, bottom:-100, left:20},
@@ -581,18 +581,22 @@ export default () => {
             spinner.stop();
 
         function step() {
-            update(xAxis.invert(currentValue));
-            currentValue = currentValue + 1; //(targetValue/151);
-            if (currentValue > targetValue) {
-              moving = false;
-              currentValue = 0;
-              clearInterval(timer);
-              // timer = 0;
-              // playButton.text("Play");
-              playButton.attr("class", "fas fa-play");
-              // console.log("Slider moving: " + moving);
-            }
+//            if (moving) {
+                update(xAxis.invert(currentValue));
+                currentValue = currentValue + 1; //(targetValue/151);
+                if (currentValue > targetValue + 1) {
+                moving = false;
+//                currentValue = 0;
+                clearInterval(timer);
+                // timer = 0;
+                // playButton.text("Play");
+                playButton.attr("class", "fas fa-play");
+                // console.log("Slider moving: " + moving);
+                }
+//            }
         }
+
+        // https://bl.ocks.org/officeofjane/47d2b0bfeecfcb41d2212d06d095c763
     
         var slider = svg.append("g")
             .attr("class", "slider")
@@ -606,11 +610,20 @@ export default () => {
             .attr("class", "track-inset")
             .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
             .attr("class", "track-overlay")
+            .on("click", function () {
+                //console.log(d3.mouse(this))
+                currentValue = d3.mouse(this)[0];
+                update(xAxis.invert(currentValue));
+            })
             .call(d3.behavior.drag()
-                .on("dragend", function() { slider.interrupt(); })
+                .on("dragend", function() {
+                    /*console.log(d3.event)
+                    currentValue = d3.event.x;
+                    update(xAxis.invert(currentValue));*/
+                    slider.interrupt(); })
                 .on("drag", function() {
-                currentValue = d3.event.x;
-                update(xAxis.invert(currentValue)); 
+                    currentValue = d3.event.x;
+                    update(xAxis.invert(currentValue)); 
                 })
             );
     
@@ -679,7 +692,7 @@ export default () => {
         playButton
             .on("click", function() {
             var button = d3.select(this);
-            if (button.text() == "Pause") {
+            if (button.classed("fas fa-pause")) {
               moving = false;
               clearInterval(timer);
               // timer = 0;

@@ -522,14 +522,15 @@ export default () => {
     var spin_target = document.getElementById('wrapper');
     spinner.spin(spin_target)
 
-    var margin = {top:0, right:50, bottom:-100, left:50},
+    var margin = {top:0, right:20, bottom:-100, left:20},
         width = 960 - margin.left - margin.right,
-        height = 100 - margin.top - margin.bottom;
+        height = 80 - margin.top - margin.bottom;
 
     var svg = d3.select("#vis")
         .append("svg")
-        .attr("viewBox", "0 0 "+  (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
-        //.attr("width", width + margin.left + margin.right)
+        //.attr("viewBox", "0 0 "+ (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+        //.attr("width", "100%")
+        .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
     var moving = false;
@@ -563,7 +564,6 @@ export default () => {
     
     const gui = new dat.GUI();
     gui.add(API, 'dataset', exps_jsons ).name( 'gene' ).onChange(data => select_data(data) ).listen();
-
 
     /* Initialize THREE.js */
     fetch(time_cell_json).then(res => res.json()).then(json => {
@@ -615,7 +615,7 @@ export default () => {
     
         slider.insert("g", ".track-overlay")
             .attr("class", "ticks")
-            .attr("transform", "translate(0,-" + 15 + ")")
+            .attr("transform", "translate(0,-" + 12 + ")")
             .selectAll("text")
             .data(xAxis.ticks(10))
             .enter()
@@ -633,7 +633,7 @@ export default () => {
 
         var tick = slider.insert("g", ".track-overlay")
             .attr("class", "ticks")
-            .attr("transform", "translate(0," + 15 + ")")
+            .attr("transform", "translate(0," + 12 + ")")
             .selectAll("text")
             .data(ticks)
             .enter()
@@ -652,7 +652,12 @@ export default () => {
             .attr("y1", -10)
             .attr("y2", 0)
             .attr("stroke", "#AAA")
-
+        
+        var seek = slider.append("line")
+            .attr("class", "track")
+            .attr("x1", xAxis.range()[0])
+            .attr("x2", xAxis.range()[0])
+        
         // console.log(xAxis.ticks(10)) //for debugging
     
         var handle = slider.insert("circle", ".track-overlay")
@@ -663,7 +668,7 @@ export default () => {
             .attr("class", "label")
             .attr("text-anchor", "middle")
             .text("0")
-            .attr("transform", "translate(0," + (-25) + ")")
+            .attr("transform", "translate(0," + (-15) + ")")
    
         var timer;
 
@@ -675,6 +680,7 @@ export default () => {
               clearInterval(timer);
               // timer = 0;
               button.text("Play");
+              button.attr("class", "triangle01")
             } else {
               moving = true;
               timer = setInterval(step, INTERVAL);
@@ -689,7 +695,7 @@ export default () => {
             label
                 .attr("x", xAxis(h))
                 .text(parseInt(h));
-            
+            seek.attr("x2", xAxis(h))
             // filter data set and redraw plot
             /* var newData = dataset.filter(function(d) {
                 return d.date < h;

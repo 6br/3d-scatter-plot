@@ -25,7 +25,9 @@
             justify-content: space-around;
             width: 100%;
         }
+        #vis {
 
+        }
         #play-button {
             background: #f08080;
             padding-right: 26px;
@@ -106,13 +108,33 @@
             opacity: 1;
         }
         }
+        #flex {
+            display: flex;
+        }
+        #controller{
+            vertical-align: center;
+            margin-top: 20px;
+        }
+        .triangle01{ 
+            width: 0;
+            height: 0;
+            border-top: solid 15px transparent;
+            border-right: solid 15px transparent;
+            border-bottom: solid 15px transparent;
+            border-left: solid 15px #697b91;
+        }
         </style>
     </head>
     
     <body>
-            <div id="container"></div>
-        <footer id="vis">
-            <button id="play-button">Play</button>
+        <div id="container"></div>
+        <footer>
+            <div id="flex">
+                <div id="controller">
+                    <button id="play-button">Play</button>
+                </div>
+                <div id="vis"></div>
+            </div i>
         </footer>
         <script src="./index.js"></script>
     </body>

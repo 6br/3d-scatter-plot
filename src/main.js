@@ -3,6 +3,7 @@ import * as d3_color from 'd3-scale-chromatic';
 import * as dat from 'dat.gui';
 import {Spinner} from 'spin.js';
 
+// https://webdevtrick.com/html-video-player-javascript-css/
 //let json = require('../json/cells.json');
 // let exp = require('../json/exp.json');
 // let exps = require('../sample/all_time_cdx4_exp_list.json');
@@ -36,6 +37,7 @@ let time_cell_json = 'time_cell_vd_va_lr.json';
 // let json = require('../partial_cells.json')
 
 let annotation = {
+    0: "Start",
     139: "Shield",
     220: "Epiboly 75%",
     272: "Epiboly 90%",
@@ -43,7 +45,10 @@ let annotation = {
     373: "3 somites",
     413: "6 somites",
     510: "10 somites",
+    699: "Stop"
 }
+
+let ticks = Object.keys(annotation);
 
 var API = {
     time: 0,
@@ -65,7 +70,7 @@ function createTextCanvas(text, color, font, size) {
     var w = ctx.measureText(text).width;
     var h = Math.ceil(size);
     canvas.width = w;
-    canvas.height = h;
+    // canvas.height = h;
     ctx.font = fontStr;
     // ctx.fillRect(0, 0, 600, 600);
     ctx.fillStyle = color || 'black'; //Set a text color.
@@ -253,8 +258,8 @@ var yExent = [-1100, 0];
 var zExent = [0, 1100];
 
 var xScale = d3.scale.linear()
-.domain(xExent)
-.range([-50, 50]);
+    .domain(xExent)
+    .range([-50, 50]);
 var yScale = d3.scale.linear()
     .domain(yExent)
     .range([-50, 50]);
@@ -366,8 +371,8 @@ function scatter(data) {
     );
     */
     var lineMat = new THREE.LineBasicMaterial({
-        color: 0xcccccc,
-        lineWidth: 1
+        color: 0xcccccc
+        // lineWidth: 1
     });
     var lineX = new THREE.Line(lineGeoX, lineMat);
     lineX.type = THREE.Lines;
@@ -423,7 +428,7 @@ function scatter(data) {
     titleZ2.position.z = zScale(vpts.zMax) + 2;
     scatterPlot.add(titleZ2);
 
-    var mat = new THREE.ParticleBasicMaterial({
+    var mat = new THREE.PointsMaterial({
         vertexColors: true,
         size: 10
     });
@@ -515,15 +520,17 @@ const INTERVAL = 150;
 
 export default () => {
     /* Initialize D3.JS */
-    var spin_target = document.getElementById('wrapper');
+    var spin_target = document.getElementById('container');
     spinner.spin(spin_target)
 
-    var margin = {top:0, right:50, bottom:-100, left:50},
+    var margin = {top:0, right:20, bottom:-100, left:20},
         width = 960 - margin.left - margin.right,
-        height = 100 - margin.top - margin.bottom;
+        height = 60 - margin.top - margin.bottom;
 
     var svg = d3.select("#vis")
         .append("svg")
+        //.attr("viewBox", "0 0 "+ (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+        //.attr("width", "100%")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
@@ -531,7 +538,7 @@ export default () => {
     var currentValue = 0;
     var targetValue = width;
 
-    var playButton = d3.select("#play-button");
+    var playButton = d3.select("#play-btn");
         
     var xAxis = d3.scale.linear()
         .domain([0, MAX_FLAME])
@@ -559,7 +566,6 @@ export default () => {
     const gui = new dat.GUI();
     gui.add(API, 'dataset', exps_jsons ).name( 'gene' ).onChange(data => select_data(data) ).listen();
 
-
     /* Initialize THREE.js */
     fetch(time_cell_json).then(res => res.json()).then(json => {
         fetch(exps_json).then(res => res.json()).then(load_exps => {
@@ -574,22 +580,28 @@ export default () => {
             exps = load_exps;
             scatter(data);
             spinner.stop();
+
         function step() {
-            update(xAxis.invert(currentValue));
-            currentValue = currentValue + 1; //(targetValue/151);
-            if (currentValue > targetValue) {
-              moving = false;
-              currentValue = 0;
-              clearInterval(timer);
-              // timer = 0;
-              playButton.text("Play");
-              // console.log("Slider moving: " + moving);
-            }
+//            if (moving) {
+                update(xAxis.invert(currentValue));
+                currentValue = currentValue + 1; //(targetValue/151);
+                if (currentValue > targetValue + 1) {
+                moving = false;
+//                currentValue = 0;
+                clearInterval(timer);
+                // timer = 0;
+                // playButton.text("Play");
+                playButton.attr("class", "fas fa-play");
+                // console.log("Slider moving: " + moving);
+                }
+//            }
         }
+
+        // https://bl.ocks.org/officeofjane/47d2b0bfeecfcb41d2212d06d095c763
     
         var slider = svg.append("g")
             .attr("class", "slider")
-            .attr("transform", "translate(" + margin.left + "," + height/5 + ")");
+            .attr("transform", "translate(" + margin.left + "," + 20 + ")");
     
         slider.append("line")
             .attr("class", "track")
@@ -599,52 +611,100 @@ export default () => {
             .attr("class", "track-inset")
             .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
             .attr("class", "track-overlay")
+            .on("click", function () {
+                //console.log(d3.mouse(this))
+                currentValue = d3.mouse(this)[0];
+                update(xAxis.invert(currentValue));
+            })
             .call(d3.behavior.drag()
-                .on("dragend", function() { slider.interrupt(); })
+                .on("dragend", function() {
+                    /*console.log(d3.event)
+                    currentValue = d3.event.x;
+                    update(xAxis.invert(currentValue));*/
+                    slider.interrupt(); })
                 .on("drag", function() {
-                currentValue = d3.event.x;
-                update(xAxis.invert(currentValue)); 
+                    currentValue = d3.event.x;
+                    update(xAxis.invert(currentValue)); 
                 })
             );
     
         slider.insert("g", ".track-overlay")
             .attr("class", "ticks")
-            .attr("transform", "translate(0," + 18 + ")")
+            .attr("transform", "translate(0,-" + 12 + ")")
             .selectAll("text")
             .data(xAxis.ticks(10))
             .enter()
-            .append("text")
+            //.append("text")
+            //.attr("x", xAxis)
+            //.attr("y", 10)
+            //.attr("text-anchor", "middle")
+            //.text(function(d) { return Math.round(d); });
+            .append("line")
+            .attr("x1", xAxis)
+            .attr("x2", xAxis)
+            .attr("y1", 0)
+            .attr("y2", 10)
+            .attr("stroke", "#AAA")
+
+        var tick = slider.insert("g", ".track-overlay")
+            .attr("class", "ticks")
+            .attr("transform", "translate(0," + 12 + ")")
+            .selectAll("text")
+            .data(ticks)
+            .enter()
+            .append("g")
+            .attr("class", "tick")
+
+        tick.append("text")
             .attr("x", xAxis)
             .attr("y", 10)
             .attr("text-anchor", "middle")
-            .text(function(d) { return Math.round(d); });
+            .style('fill', 'white')
+            .text(function(d) { return annotation[d]; });
 
-        // console.log(xAxis.ticks(10)) for debugging
+        tick.append("line")
+            .attr("x1", xAxis)
+            .attr("x2", xAxis)
+            .attr("y1", -10)
+            .attr("y2", 0)
+            .attr("stroke", "#AAA")
+        
+        var seek = slider.append("line")
+            .attr("class", "track-bar")
+            .attr("x1", xAxis.range()[0] - 7)
+            .attr("x2", xAxis.range()[0] - 7)
+        
+        // console.log(xAxis.ticks(10)) //for debugging
     
         var handle = slider.insert("circle", ".track-overlay")
             .attr("class", "handle")
-            .attr("r", 9);
+            .attr("r", 7);
     
-        var label = slider.append("text")  
+        /*var label = slider.append("text")  
             .attr("class", "label")
             .attr("text-anchor", "middle")
             .text("0")
-            .attr("transform", "translate(0," + (-25) + ")")
+            .attr("transform", "translate(0," + (-15) + ")")*/
    
+        var label = d3.select("#timePlayed")
+
         var timer;
 
         playButton
             .on("click", function() {
             var button = d3.select(this);
-            if (button.text() == "Pause") {
+            if (button.classed("fas fa-pause")) {
               moving = false;
               clearInterval(timer);
               // timer = 0;
-              button.text("Play");
+              // button.text("Play");
+              button.attr("class", "fas fa-play");
             } else {
               moving = true;
               timer = setInterval(step, INTERVAL);
-              button.text("Pause");
+              //timer = setTimeout(step, INTERVAL);
+              // button.text("Pause");
+              button.attr("class", "fas fa-pause");
             }
             // console.log("Slider moving: " + moving);
           })
@@ -653,9 +713,9 @@ export default () => {
             // update position and text of label according to slider scale
             handle.attr("cx", xAxis(h));
             label
-                .attr("x", xAxis(h))
+                //.attr("x", xAxis(h))
                 .text(parseInt(h));
-            
+            seek.attr("x2", xAxis(h) - 7)
             // filter data set and redraw plot
             /* var newData = dataset.filter(function(d) {
                 return d.date < h;
